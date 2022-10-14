@@ -5,6 +5,9 @@ project(Subsample
         LANGUAGES CXX C
         )
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED yes)
+
 set(TARGET_NAME subsample_lib)
 set(PY_PACKAGE_NAME subsample)
 
@@ -14,19 +17,18 @@ include(FetchContent)
 FetchContent_Declare(
         pybind11
         GIT_REPOSITORY https://github.com/pybind/pybind11
-        GIT_TAG        v2.9.2
+        GIT_TAG        v2.10.0
 )
 
-FetchContent_GetProperties(pybind11)
-if(NOT pybind11_POPULATED)
-    FetchContent_Populate(pybind11)
-    add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
-endif()
+FetchContent_MakeAvailable(pybind11)
 
-file(GLOB_RECURSE cpp_sources src/*.cpp src/*.h src/*.hpp)
+file(GLOB_RECURSE cpp_sources src/*.cpp src/*.h)
 file(GLOB_RECURSE py_sources subsample/*.py)
 
+#include_directories(${pybind11_INCLUDE_DIRS})
+
 add_library(${TARGET_NAME} MODULE ${cpp_sources})
+
 target_link_libraries(${TARGET_NAME} PRIVATE
         pybind11::module
         $<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:stdc++fs>
@@ -97,5 +99,3 @@ add_custom_target(PyPackageInstall
         COMMENT "Installing wheel file"
         )
 add_dependencies(PyPackageInstall PyPackageBuild)
-
-add_executable(Subsample ${cpp_sources})
