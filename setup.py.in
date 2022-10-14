@@ -1,0 +1,25 @@
+from setuptools import setup, find_packages
+from setuptools.dist import Distribution
+import sys
+
+if sys.version_info < (3, 8):
+    sys.exit('Sorry, Python < 3.8 is not supported')
+
+class BinaryDistribution(Distribution):
+    """Distribution which always forces a binary package with platform name"""
+    def has_ext_modules(foo):
+        return True
+
+setup(
+    name='subsample',
+    version='@CMAKE_PROJECT_VERSION@',
+    packages=["@PY_PACKAGE_NAME@"],
+    description="Subsampling algorithms for Kornelius",
+    author="Patrick Scheibe",
+    license="MIT",
+    include_package_data=True,
+    package_data={
+        '': ['libs/@TARGET_PYMODULE_NAME@']
+    },
+    distclass=BinaryDistribution
+)
