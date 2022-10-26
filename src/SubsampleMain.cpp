@@ -29,7 +29,7 @@
 // Thomas Kuestner, University of Tuebingen and University of Stuttgart, Germany
 // (thomas.kuestner@{med.uni-tuebingen.de,iss.uni-stuttgart.de})
 
-#include "SubsampleMain.h"
+#include "../include/SubsampleMain.h"
 
 int main(int argc,char *argv[])
 {

@@ -1,4 +1,4 @@
-#include "SubsampleMain.h"
+#include "../include/SubsampleMain.h"
 
 Point::Point()
 	: gridPos{0, 0}, realPos{0, 0}, isPoint(true)

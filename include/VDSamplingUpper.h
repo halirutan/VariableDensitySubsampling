@@ -1,5 +1,10 @@
 #pragma once
 
+#include "SamplingMask.h"
+#include "Point.h"
+#include "LinkedList.h"
+#include "VariableDensity.h"
+
 class VDSamplingUpper
 {
 public:
@@ -28,6 +33,8 @@ public:
 
 	void setMin_dist(float m_d);
 	void setSamplingMask(int **samplingMask, long height, long width);
+	void assignMaskSlice(SamplingMask &mask, size_t phaseIndex);
+
 
 	// =================================
     // prepare fully sampled region
@@ -92,6 +99,5 @@ protected:
 	LinkedList* anchor;								// anchor of the active list
 	int nElements;									// number of elements in the active list
 	Point noPoint;
-
 
 };

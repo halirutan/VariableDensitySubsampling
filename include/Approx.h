@@ -1,5 +1,7 @@
 #pragma once
 
+#include "VDSamplingUpper.h"
+
 class Approx
 {
 public:

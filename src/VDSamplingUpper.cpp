@@ -1,4 +1,4 @@
-#include "SubsampleMain.h"
+#include "../include/SubsampleMain.h"
 
 VDSamplingUpper::VDSamplingUpper(void)
 {
@@ -57,7 +57,7 @@ VDSamplingUpper::VDSamplingUpper(bool flag_first, short int vd_type, short int s
 		grid2[i] = new long[width];
 
 	// initialise partial fourier matrix
-	if(pF_x == true)
+	if(pF_x)
 	{
 		pF_border[0] = long(ceil((1-pF_value) * float(height)));
 		pF_border[1] = 0;
@@ -81,7 +81,7 @@ VDSamplingUpper::VDSamplingUpper(bool flag_first, short int vd_type, short int s
 	}
 	nSamplingMaskPoints = 0;
 	nSamplingMaskPointsHelper = 0;
-	anchor = 0;
+	anchor = nullptr;
 	nElements = 0;
 	min_dist_status = 0;
 }
@@ -142,6 +142,7 @@ void VDSamplingUpper::getSamplingMask(int ***smplMask, long lPhase)
 		}
 	}
 }
+
 long VDSamplingUpper::getNSamplingMaskPoints(void)
 {
 	return nSamplingMaskPoints;
@@ -166,6 +167,14 @@ void VDSamplingUpper::setSamplingMask(int **samplingMask, long height, long widt
 	}
 }
 
+void VDSamplingUpper::assignMaskSlice(SamplingMask &mask, size_t phaseIndex)
+{
+	for(long i=0; i<height; i++)
+	{
+		mask.setLine(static_cast<size_t>(i), phaseIndex, samplingMask[i]);
+	}
+}
+
 // ====================================================================================================================================
 
 void VDSamplingUpper::genMaskWithFullySampledRegion(VariableDensity *vd)
@@ -180,7 +189,7 @@ void VDSamplingUpper::genMaskWithFullySampledRegion(VariableDensity *vd)
 	float dCell;
 
 	// reininitialise the grids, lists and the sampling mask and fraction
-	anchor = 0;
+	anchor = nullptr;
 	nElements = 0;
 
 	for (long k = 0; k<height; k++)
