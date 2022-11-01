@@ -33,12 +33,12 @@ class PoissonSampling:
 ```
 
 Therefore, a simple usage of the sampling is done by importing the package, create a `PoissonSampling`
-instance, setting all parameters that deviate from the defaults a call the `subsample` method:
+instance, setting all parameters that deviate from the defaults and call the `subsample()` method:
 
 ```python
-import subsample
+from subsample import PoissonSampling
 
-mask = subsample.PoissonSampling(width=10, height=10).subsample()
+mask = PoissonSampling(width=10, height=10).subsample()
 ```
 
 If you have your parameters as a dict because, e.g. you imported it from JSON, then you can do the same
@@ -46,10 +46,10 @@ by unpacking the dict.
 You only need to take care of correct spelling of the keys.
 
 ```python
-import subsample
+from subsample import PoissonSampling
 
 my_dict = {"width" : 10, "height": 20}
-mask = subsample.PoissonSampling(**my_dict).subsample()
+mask = PoissonSampling(**my_dict).subsample()
 ```
 
 ## Installation
