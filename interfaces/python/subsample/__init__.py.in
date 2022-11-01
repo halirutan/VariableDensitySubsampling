@@ -1,1 +1,22 @@
-from .libs.@TARGET_NAME@ import *
+from .libs.@TARGET_NAME@ import SamplingMask, pd_sampling
+from dataclasses import dataclass, asdict
+import numpy as np
+
+
+@dataclass
+class PoissonSampling:
+    width: int = 256
+    height: int = 128
+    acceleration: float = 2.0
+    fully_sampled_fraction: float = 0.065
+    espresso_factor: float = 1.0
+    espresso_direction: bool = True
+    phases: int = 1
+    variable_density_type: int = 4
+    sample_type: int = 1
+    elliptical_mask: bool = True
+    power: float = 2.0
+    root: float = 2.0
+
+    def subsample(self) -> SamplingMask:
+        return np.array(pd_sampling(**asdict(self)))
