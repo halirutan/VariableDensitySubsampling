@@ -1,14 +1,24 @@
 ![Just a nice banner](subsample.jpg)
 
-# Python Interface for Poisson Subsampling
+# Subsample: A Python Interface for Poisson Subsampling
+
+<!-- TOC -->
+* [Subsample: A Python Interface for Poisson Subsampling](#subsample--a-python-interface-for-poisson-subsampling)
+  * [Usage](#usage)
+  * [Building and Installation](#building-and-installation)
+    * [General Information](#general-information)
+    * [Setting up a Virtual Environment](#setting-up-a-virtual-environment)
+    * [Using CMake to build the Python package](#using-cmake-to-build-the-python-package)
+  * [CS_MoCo_LAB License](#cs_moco_lab-license)
+<!-- TOC -->
 
 This repository provides a Python interface for the Poisson subsampling
 method available in the [CS_MoCo_LAB repository](https://github.com/thomaskuestner/CS_MoCo_LAB).
-It means that instead of writing sampling mask to a text file, you can now directly
-call the subsampling function from Python and get a Numpy array.
+So instead of calling a command-line program and writing sampling masks to a text file, you can now directly
+call the subsampling function from within Python to get the result mask as a Numpy array.
 
 This project uses a CMake build setup that uses Pybind11 to directly interface with the C++ code.
-It can do both build an installable Python wheel and install the package in a (virtual) Python environment
+It can build an installable Python wheel, as well as, directly install the package in a (virtual) Python environment
 for you.
 
 ## Usage
@@ -52,9 +62,89 @@ my_dict = {"width" : 10, "height": 20}
 mask = PoissonSampling(**my_dict).subsample()
 ```
 
-## Installation
+## Building and Installation
 
-TODO
+### General Information
+
+Below, I'll only describe how to build the complete Python package.
+However, be aware that it actually consists of separate parts that can be build individually
+and that the whole project is easy to extend for other language interfaces.
+For Python, the rundown is as follows:
+
+1. A shared library is build from the CS_MoCo_LAB C++ sources. These sources were adapted to make
+   interfacing easier. In particular, there is now a `PoissonSampling` class that returns a
+   `SamplingMask` object whose memory layout is flat so that it's easy to create a Numpy array from it.
+2. The Python interface contains Pybind11 C++ code that is compiled, and it uses the built shared
+   library underneath. Additionally, it contains Python code necessary for building a Python package.
+
+The Subsample package needs an appropriate Python environment to build, because it uses Python's own 
+tools to package the C++ library and Python wrapper code into a Python wheel file.
+
+### Setting up a Virtual Environment
+
+If you already have an existing Python environment (conda, virtualenv) it should have the packages
+`setuptools` and `numpy` installed, and it should have Python 3.9 (that's where I tested it).
+If you start fresh, I suggest you use [Miniconda](https://docs.conda.io/en/latest/miniconda.html) and
+create a new environment based on the definition file you find in 
+`interfaces/python/environment.yml`:
+
+```shell
+conda env create -f interfaces/python/environment.yml
+```
+
+The name of the new environment is `subsample_env` and defined in the `.yml` file.
+After that, you can activate and test the new environment by activating it:
+
+```shell
+conda activate subsample_env
+```
+
+### Using CMake to build the Python package
+
+You'll need CMake >= 3.17 and a suitable C/C++ compiler like gcc or clang installed.
+Create a sub-folder `build` inside the project:
+
+```shell
+mkdir build
+cd build
+```
+
+Configure the build by running CMake.
+Here it is important to pass two command-line arguments to CMake, where the first one will turn
+on building of the Python interface and the second one will specify the location of the Python
+environment you want to use.
+
+```shell
+cmake -DPYTHON_INT=1 -DPython3_ROOT_DIR="/path/to/subsample_env" ..
+```
+
+Now you can build or build and directly install the Python package.
+If you have a multicore machine, you can set the `-j XX` option to the number of cores for parallel building.
+Otherwise, just leave this option out.
+Building the Python wheel:
+
+```shell
+make -j 8 PyPackageBuild
+```
+
+The installable wheel file can now be found inside your `build` folder under
+
+```shell
+interfaces/python/subsample-2022.0-cp39-cp39-linux_x86_64.whl
+```
+
+and you can install it in your activated Python environment with
+
+```shell
+python -m pip install --upgrade --force-reinstall --no-deps subsample-2022.0-cp39-cp39-linux_x86_64.whl
+```
+
+However, if you just want to install the package into the virtual environment you used for building,
+you can use
+
+```shell
+make -j 8 PyPackageInstall 
+```
 
 ## CS_MoCo_LAB License
 
