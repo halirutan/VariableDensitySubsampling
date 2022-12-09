@@ -8,7 +8,7 @@ namespace py = pybind11;
 PYBIND11_MODULE(subsample_python_library, m)
 {
 	m.doc() = "This is a Python binding of the C++ CS_MoCo_LAB Library";
-	// Import detail: We switch lPartitions and lLines here because it seems "width" and "height" of the output
+	// Important detail: We switch lPartitions and lLines here because it seems "width" and "height" of the output
 	// was confused inside the library. To give a predictable result that actually agrees with the passed width
 	// and height arguments inside Python, we hack around this here.
 	m.def("pd_sampling", [](
@@ -23,7 +23,8 @@ PYBIND11_MODULE(subsample_python_library, m)
 			  short int s_type,
 			  bool ellipticalMask,
 			  float p,
-			  float n
+			  float n,
+			  unsigned int random_seed
 		  )
 		  {
 			  return poissonSubsampling(
@@ -40,7 +41,8 @@ PYBIND11_MODULE(subsample_python_library, m)
 				  p,
 				  n,
 				  0,
-				  1.0);
+				  1.0,
+				  random_seed);
 		  },
 		  py::kw_only(),
 		  py::arg("width"),
@@ -54,7 +56,8 @@ PYBIND11_MODULE(subsample_python_library, m)
 		  py::arg("sample_type"),
 		  py::arg("elliptical_mask"),
 		  py::arg("power"),
-		  py::arg("root")
+		  py::arg("root"),
+		  py::arg("random_seed")
 	);
 
 	py::class_<SamplingMask>(m, "SamplingMask", py::buffer_protocol())

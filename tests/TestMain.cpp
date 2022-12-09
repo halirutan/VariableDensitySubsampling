@@ -50,7 +50,7 @@ TEST_CASE("VDSamplingUpper creation and destruction") {
 TEST_CASE("Poisson Subsampling") {
 
 	SECTION("Default parameters") {
-		SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0);
+		SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, 0);
 		size_t ones = 0;
 		size_t zeroes = 0;
 		for (size_t p = 0; p < mask.phases(); p++) {
@@ -71,5 +71,41 @@ TEST_CASE("Poisson Subsampling") {
 			}
 		}
 		CHECK(zeroes > ones);
+	}
+
+	SECTION("Different outcomes with random seed") {
+		unsigned int seed = 7919;
+		SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed);
+		SamplingMask maskComparison = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed);
+
+		for (size_t p = 0; p < mask.phases(); p++) {
+			for (size_t h = 0; h < mask.height(); h++) {
+				for (size_t w = 0; w < mask.width(); w++) {
+					REQUIRE(mask.get(w, h, p) == maskComparison.get(w, h, p));
+				}
+			}
+		}
+	}
+
+
+	SECTION("Equal outcomes with fixed random seed") {
+		unsigned int seed1 = 7919;
+		unsigned int seed2 = 541;
+		SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed1);
+		SamplingMask maskComparison = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed2);
+
+
+		for (size_t p = 0; p < mask.phases(); p++) {
+			for (size_t h = 0; h < mask.height(); h++) {
+				for (size_t w = 0; w < mask.width(); w++) {
+					if(mask.get(w, h, p) != maskComparison.get(w, h, p)) {
+						return;
+					}
+				}
+			}
+		}
+
+		INFO("Got exactly the same sampling masks with different seeds");
+		FAIL();
 	}
 }

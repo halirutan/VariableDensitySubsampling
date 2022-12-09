@@ -5,6 +5,7 @@ import numpy as np
 
 @dataclass
 class PoissonSampling:
+    """Provides access to Poisson subsampling by creating an instance of that class and calling subsample() on it."""
     width: int = 256
     height: int = 128
     acceleration: float = 2.0
@@ -17,6 +18,7 @@ class PoissonSampling:
     elliptical_mask: bool = True
     power: float = 2.0
     root: float = 2.0
+    random_seed: int = 0
 
     def subsample(self) -> SamplingMask:
         return np.array(pd_sampling(**asdict(self)))

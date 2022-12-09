@@ -12,7 +12,7 @@
 class SamplingMask
 {
 public:
-    SamplingMask(size_t w, size_t h, size_t phases);
+	SamplingMask(size_t w, size_t h, size_t phases);
 
 	/**
 	 * The memory for data is not deleted on destruction of the object!
@@ -29,13 +29,13 @@ public:
 	 */
 	[[nodiscard]] std::string toDebugString() const;
 
-    [[nodiscard]] size_t height() const;
-    [[nodiscard]] size_t width() const;
-    [[nodiscard]] size_t phases() const;
+	[[nodiscard]] size_t height() const;
+	[[nodiscard]] size_t width() const;
+	[[nodiscard]] size_t phases() const;
 	[[nodiscard]] int get(size_t w, size_t h, size_t p) const;
 	void setLine(size_t height, size_t phase, const int *dataPointer);
 private:
-    size_t m_width, m_height, m_phases, m_data_size;
+	size_t m_width, m_height, m_phases, m_data_size;
 	std::shared_ptr<int[]> m_data;
 
 };
