@@ -9,7 +9,7 @@
     * [General Information](#general-information)
     * [Setting up a Virtual Environment](#setting-up-a-virtual-environment)
     * [Using CMake to build the Python package](#using-cmake-to-build-the-python-package)
-  * [CS_MoCo_LAB License](#cs_moco_lab-license)
+  * [CS_MoCo_LAB License](#csmocolab-license)
 <!-- TOC -->
 
 This repository provides a Python interface for the Poisson subsampling
@@ -40,6 +40,8 @@ class PoissonSampling:
     elliptical_mask: bool = True
     power: float = 2.0
     root: float = 2.0
+    random_seed: int = 0
+    logging: bool = False
 ```
 
 Therefore, a simple usage of the sampling is done by importing the package, create a `PoissonSampling`
@@ -61,6 +63,12 @@ from subsample import PoissonSampling
 my_dict = {"width" : 10, "height": 20}
 mask = PoissonSampling(**my_dict).subsample()
 ```
+### Notes
+
+- The `random_seed` property is intended for debugging/development where you need to fix the outcome of the random
+  number generator. A value different from zero will be used as an initialization seed.
+- The `logging` switch will turn off the debugging `printf` calls coming from the calculation algorithm and which would
+  appear in the Python console.
 
 ## Building and Installation
 

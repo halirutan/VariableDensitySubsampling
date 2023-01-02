@@ -24,7 +24,8 @@ PYBIND11_MODULE(subsample_python_library, m)
 			  bool ellipticalMask,
 			  float p,
 			  float n,
-			  unsigned int random_seed
+			  unsigned int random_seed,
+			  bool logging
 		  )
 		  {
 			  return poissonSubsampling(
@@ -42,7 +43,8 @@ PYBIND11_MODULE(subsample_python_library, m)
 				  n,
 				  0,
 				  1.0,
-				  random_seed);
+				  random_seed,
+				  logging);
 		  },
 		  py::kw_only(),
 		  py::arg("width"),
@@ -57,7 +59,8 @@ PYBIND11_MODULE(subsample_python_library, m)
 		  py::arg("elliptical_mask"),
 		  py::arg("power"),
 		  py::arg("root"),
-		  py::arg("random_seed")
+		  py::arg("random_seed"),
+		  py::arg("logging")
 	);
 
 	py::class_<SamplingMask>(m, "SamplingMask", py::buffer_protocol())
