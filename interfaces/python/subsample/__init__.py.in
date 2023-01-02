@@ -5,7 +5,31 @@ import numpy as np
 
 @dataclass
 class PoissonSampling:
-    """Provides access to Poisson subsampling by creating an instance of that class and calling subsample() on it."""
+    """Provides access to Poisson subsampling by creating an instance of that class and calling subsample() on it.
+
+    Attributes:
+       width (int): Width of the sampling mask [16:1024].
+       height (int): Height of the sampling mask [1:1024].
+       acceleration (float): Desired acceleration factor [2:15].
+       fully_sampled_fraction (float): Percentage of fully sampled region [0:1].
+       espresso_factor (float): ESPReSSo/Partial Fourier compactification factor [0.5:1].
+       espresso_direction (bool): ESPReSSo/Partial Fourier direction along width (false) or height (true).
+       phases (int): Number of phases [1:1024]
+       variable_density_type (int): Variable-density options [1:5].
+           (1) None,
+           (2) central point,
+           (3) central block,
+           (4) central ellipse,
+           (5) local adaptive variable-density (defunct from Python)
+       sample_type (int): Poisson-Disc sampling options [0:2].
+           (0) 2D Poisson-Disc (chosen automatically if height=1).
+           (1) 3D Poisson-Disc (strictly obeying neighbourhood criterion).
+           (2) 3D pseudo Poisson-Disc (approximately obeying neighbourhood criterion).
+       elliptical_mask (bool): Sample in elliptical scan region.
+       power (float): Power of variable-density scaling [1:5]
+       root (float): Root of variable-density scaling [1:5]
+       random_seed (int): Explicit random seed to use. Automatic if 0.
+    """
     width: int = 256
     height: int = 128
     acceleration: float = 2.0
