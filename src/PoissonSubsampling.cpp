@@ -21,13 +21,19 @@ SamplingMask poissonSubsampling(long lLines,
 								float p,
 								float n,
 								short int body_part,
-								float iso_fac)
+								float iso_fac,
+								unsigned int random_seed)
 {
 
-	// seed timer for pseudo random number generation
-	time_t seconds;
-	time(&seconds);
-	srand((unsigned) seconds);
+	// If the random_seed argument is non-zero, we use that for initializing the random seed, otherwise
+	// the current system time seconds are used.
+	if (random_seed > 0) {
+		srand(random_seed);
+	} else {
+		time_t seconds;
+		time(&seconds);
+		srand((unsigned) seconds);
+	}
 
 	// flags
 	bool flag_first = true;              // fix first point on/off
