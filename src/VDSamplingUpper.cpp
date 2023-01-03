@@ -248,8 +248,8 @@ void VDSamplingUpper::genMaskWithFullySampledRegion(VariableDensity *vd)
 
 	nSamplingMaskPointsHelper = nSamplingMaskPoints;
 
-	cout << "nSamplingMaskPointsHelper = " << nSamplingMaskPointsHelper << endl;
-	cout << "nElements = " << nElements << endl;
+	printf("nSamplingMaskPointsHelper = %ld\n", nSamplingMaskPointsHelper);
+	printf("nElements = %d\n", nElements);
 
 	for (int i = 0; i < nElements; i++)
 	{

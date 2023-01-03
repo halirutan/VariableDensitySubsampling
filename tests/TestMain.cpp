@@ -1,111 +1,149 @@
 #define CATCH_CONFIG_RUNNER
+#include "PoissonSubsampling.h"
+#include "SamplingMask.h"
+#include "StdoutRedirector.h"
+#include "VDSamplingUpper.h"
+#include "catch2/matchers/catch_matchers.hpp"
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <iostream>
-#include "SamplingMask.h"
-#include "PoissonSubsampling.h"
-#include "VDSamplingUpper.h"
+#include <stdexcept>
 
 int main(int argc, char *argv[])
 {
-	int result = Catch::Session().run(argc, argv);
-	return result;
+    int result = Catch::Session().run(argc, argv);
+    return result;
 }
 
-TEST_CASE("Sampling Mask Test") {
-	SECTION("Create and assign") {
-		int data[20];
-		for (int i = 0; i < 20; i++) {
-			data[i] = i;
-		}
+TEST_CASE("Redirecting stdout")
+{
+    SECTION("Nothing gets thrown")
+    {
+        REQUIRE_NOTHROW(StdoutRedirector::redirectStdout(true));
+        printf("This message should not appear");
+        REQUIRE_NOTHROW(StdoutRedirector::redirectStdout(false));
+    }
 
-		SamplingMask mask{20, 10, 1};
-		for (size_t h = 0; h < mask.height(); h++) {
-			mask.setLine(h, 0, data);
-		}
 
-	}
+    SECTION("Double closing the redirect")
+    {
+        StdoutRedirector::redirectStdout(true);
+        printf("This message should not appear");
+        StdoutRedirector::redirectStdout(false);
+        REQUIRE_THROWS_WITH(
+            StdoutRedirector::redirectStdout(false),
+            "Don't turn off redirecting twice.");
+    }
+
+    SECTION("Double redirecting")
+    {
+        REQUIRE_NOTHROW(StdoutRedirector::redirectStdout(true));
+        REQUIRE_THROWS_WITH(
+            StdoutRedirector::redirectStdout(true),
+            "Already redirecting. Don't call it twice.");
+        printf("This message should not appear");
+        REQUIRE_NOTHROW(StdoutRedirector::redirectStdout(false));
+    }
 }
 
-TEST_CASE("VDSamplingUpper creation and destruction") {
-	SECTION("Destruction segfault") {
-		VDSamplingUpper *object = new VDSamplingUpper(
-			true,
-			4,
-			1,
-			256,
-			128,
-			2.0,
-			1.0,
-			true,
-			2.0,
-			20,
-			0.95,
-			25760
-		);
-		delete object;
-	}
+TEST_CASE("Sampling Mask Test")
+{
+    SECTION("Create and assign")
+    {
+        int data[20];
+        for (int i = 0; i < 20; i++) {
+            data[i] = i;
+        }
+
+        SamplingMask mask{20, 10, 1};
+        for (size_t h = 0; h < mask.height(); h++) {
+            mask.setLine(h, 0, data);
+        }
+    }
 }
 
-TEST_CASE("Poisson Subsampling") {
+TEST_CASE("VDSamplingUpper creation and destruction")
+{
+    SECTION("No Segfault on deleting the object")
+    {
+        VDSamplingUpper *object = new VDSamplingUpper(
+            true,
+            4,
+            1,
+            256,
+            128,
+            2.0,
+            1.0,
+            true,
+            2.0,
+            20,
+            0.95,
+            25760);
+        delete object;
+    }
+}
 
-	SECTION("Default parameters") {
-		SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, 0);
-		size_t ones = 0;
-		size_t zeroes = 0;
-		for (size_t p = 0; p < mask.phases(); p++) {
-			for (size_t h = 0; h < mask.height(); h++) {
-				for (size_t w = 0; w < mask.width(); w++) {
-					auto value = mask.get(w, h, p);
-					if (value == 1) {
-						ones++;
-					}
-					else if (value == 0) {
-						zeroes++;
-					}
-					else {
-						// There should only be 1s and 0s in the data
-						FAIL();
-					}
-				}
-			}
-		}
-		CHECK(zeroes > ones);
-	}
+TEST_CASE("Poisson Subsampling")
+{
 
-	SECTION("Different outcomes with random seed") {
-		unsigned int seed = 7919;
-		SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed);
-		SamplingMask maskComparison = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed);
+    SECTION("Default parameters")
+    {
+        SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, 0, false);
+        size_t ones = 0;
+        size_t zeroes = 0;
+        for (size_t p = 0; p < mask.phases(); p++) {
+            for (size_t h = 0; h < mask.height(); h++) {
+                for (size_t w = 0; w < mask.width(); w++) {
+                    auto value = mask.get(w, h, p);
+                    if (value == 1) {
+                        ones++;
+                    }
+                    else if (value == 0) {
+                        zeroes++;
+                    }
+                    else {
+                        // There should only be 1s and 0s in the data
+                        FAIL();
+                    }
+                }
+            }
+        }
+        CHECK(zeroes > ones);
+    }
 
-		for (size_t p = 0; p < mask.phases(); p++) {
-			for (size_t h = 0; h < mask.height(); h++) {
-				for (size_t w = 0; w < mask.width(); w++) {
-					REQUIRE(mask.get(w, h, p) == maskComparison.get(w, h, p));
-				}
-			}
-		}
-	}
+    SECTION("Different outcomes with random seed")
+    {
+        unsigned int seed = 7919;
+        SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed, false);
+        SamplingMask maskComparison = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed, false);
 
-
-	SECTION("Equal outcomes with fixed random seed") {
-		unsigned int seed1 = 7919;
-		unsigned int seed2 = 541;
-		SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed1);
-		SamplingMask maskComparison = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed2);
+        for (size_t p = 0; p < mask.phases(); p++) {
+            for (size_t h = 0; h < mask.height(); h++) {
+                for (size_t w = 0; w < mask.width(); w++) {
+                    REQUIRE(mask.get(w, h, p) == maskComparison.get(w, h, p));
+                }
+            }
+        }
+    }
 
 
-		for (size_t p = 0; p < mask.phases(); p++) {
-			for (size_t h = 0; h < mask.height(); h++) {
-				for (size_t w = 0; w < mask.width(); w++) {
-					if(mask.get(w, h, p) != maskComparison.get(w, h, p)) {
-						return;
-					}
-				}
-			}
-		}
+    SECTION("Equal outcomes with fixed random seed")
+    {
+        unsigned int seed1 = 7919;
+        unsigned int seed2 = 541;
+        SamplingMask mask = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed1, false);
+        SamplingMask maskComparison = poissonSubsampling(32, 16, 2.0, 0.065, 1.0, true, 10, 4, 1, true, 2.0, 2.0, 1, 1.0, seed2, false);
 
-		INFO("Got exactly the same sampling masks with different seeds");
-		FAIL();
-	}
+        for (size_t p = 0; p < mask.phases(); p++) {
+            for (size_t h = 0; h < mask.height(); h++) {
+                for (size_t w = 0; w < mask.width(); w++) {
+                    if (mask.get(w, h, p) != maskComparison.get(w, h, p)) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        INFO("Got exactly the same sampling masks with different seeds");
+        FAIL();
+    }
 }

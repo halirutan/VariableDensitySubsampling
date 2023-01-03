@@ -3993,7 +3993,7 @@ bool Approx::checkMask(bool flag_autoTest, VDSamplingUpper *poiSamp, short int m
 		// increase min_dist approximately
 		step = (fabs(range[1] - range[0])) / 2;
 		min_dist = min_dist + step;
-		cout << "\nnew min_dist: " << min_dist << endl;
+		printf("\nnew min_dist: %f\n", min_dist);
 		poiSamp->setMin_dist(min_dist);
 	}
 	else if (min_dist_status == 2) {   // min_dist too large --> decrease min_dist

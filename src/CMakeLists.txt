@@ -15,6 +15,7 @@ add_library(subsample_library
         SubsampleMain.cpp
         VariableDensity.cpp
         VDSamplingUpper.cpp
+        StdoutRedirector.cpp
         )
 
 target_include_directories(subsample_library
