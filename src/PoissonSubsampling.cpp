@@ -40,7 +40,18 @@ SamplingMask poissonSubsampling(long lLines,
     bool flag_first = true;   // fix first point on/off
     bool flag_autoTest = true;// automatic test if min_dist is too small or not on/off
 
-    // logging:
+    // When logging is turned off, we will redirect all printf output
+    auto beginStdoutLoggingSection = [logging]() -> void {
+        if (!logging) {
+            StdoutRedirector::redirectStdout(true);
+        }
+    };
+
+    auto endStdoutLoggingSection = [logging]() -> void {
+        if(!logging) {
+            StdoutRedirector::redirectStdout(false);
+        }
+    };
 
     // important parameters
     //vd_options vd_op;
@@ -91,10 +102,10 @@ SamplingMask poissonSubsampling(long lLines,
     VariableDensity *vd = new VariableDensity(nX, nY_helper, vd_type, fully_sampled, ellip_mask, p, n, iso_fac, M);
 
     if (vd_type < 6) {
-        StdoutRedirector::redirectStdout(true);
+        beginStdoutLoggingSection();
         min_dist =
             Approx::findMinDistInLUT(nX, nY, M, fully_sampled, pF_value, vd_type, ellip_mask, p, iso_fac, smpl_type);
-        StdoutRedirector::redirectStdout(false);
+        endStdoutLoggingSection();
     }
 
     // necessary parameters for approximation of min_dist
@@ -102,9 +113,9 @@ SamplingMask poissonSubsampling(long lLines,
 
     float *range;
     if (smpl_type != 0) {// 3D
-        StdoutRedirector::redirectStdout(true);
+        beginStdoutLoggingSection();
         range = Approx::findRangeInLUT(nX, nY, M, fully_sampled, pF_value, vd_type, ellip_mask, p, iso_fac);
-        StdoutRedirector::redirectStdout(false);
+        endStdoutLoggingSection();
     }
     else {
         range = new float[2];
@@ -129,7 +140,7 @@ SamplingMask poissonSubsampling(long lLines,
                                                    nPointsToTest,
                                                    deviation,
                                                    nPointsMask};
-    StdoutRedirector::redirectStdout(true);
+    beginStdoutLoggingSection();
     for (size_t lPhase = 0; lPhase < lPhases; lPhase++) {
         int loopcounter = 0;
         bool failed = true;
@@ -155,7 +166,7 @@ SamplingMask poissonSubsampling(long lLines,
 
         poiSamp->assignMaskSlice(samplingMask, lPhase);
     }
-    StdoutRedirector::redirectStdout(false);
+    endStdoutLoggingSection();
     delete poiSamp;
     delete approx;
     delete vd;
