@@ -63,12 +63,28 @@ from subsample import PoissonSampling
 my_dict = {"width" : 10, "height": 20}
 mask = PoissonSampling(**my_dict).subsample()
 ```
+
 ### Notes
 
 - The `random_seed` property is intended for debugging/development where you need to fix the outcome of the random
   number generator. A value different from zero will be used as an initialization seed.
 - The `logging` switch will turn off the debugging `printf` calls coming from the calculation algorithm and which would
   appear in the Python console.
+
+## Helper Programs
+
+Under `apps` there is a small helper program that creates an image for sampling masks.
+
+![Mask image](mask.png)
+
+Use
+
+```shell
+maskImage --help
+```
+
+to see all options.
+The program expects an output directory as last argument.
 
 ## Building and Installation
 
