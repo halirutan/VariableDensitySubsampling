@@ -61,6 +61,8 @@ int main(int argc, char **argv)
 			   ("random-seed",
 				"Initialization of the random generator if larger than 0",
 				cxxopts::value<unsigned int>()->default_value("0"))
+			   ("remove-kspace-center", "Whether to exclude the KSpace center from the mask",
+				   cxxopts::value<bool>()->default_value("true"))
 			   ("logging", "Log library messages", cxxopts::value<bool>()->default_value("false"))
 			   ("o, output-path", "Path to output images", cxxopts::value<std::string>()->default_value("false"));
 
@@ -93,9 +95,10 @@ int main(int argc, char **argv)
 	short v_type = result["variable-density-type"].as<short>();
 	short s_type = result["sampling-type"].as<short>();
 	bool ellipticalMask = result["elliptical-mask"].as<bool>();
-	float p = result["power"].as<float>();
-	float n = result["root"].as<float>();
+	float power = result["power"].as<float>();
+	float root = result["root"].as<float>();
 	unsigned int random_seed = result["random-seed"].as<unsigned int>();
+	bool removeKSpaceCenter = result["remove-kspace-center"].as<bool>();
 	bool logging = result["logging"].as<bool>();
 	SamplingMask mask = poissonSubsampling(lLines,
 										   lPartitions,
@@ -107,8 +110,9 @@ int main(int argc, char **argv)
 										   v_type,
 										   s_type,
 										   ellipticalMask,
-										   p,
-										   n,
+										   power,
+										   root,
+										   removeKSpaceCenter,
 										   0, // body part
 										   1.0, //iso factor
 										   random_seed,

@@ -60,3 +60,21 @@ int SamplingMask::get(size_t w, size_t h, size_t p) const
 	assert(ptr < m_data_size);
 	return m_data[ptr];
 }
+
+void SamplingMask::set(size_t w, size_t h, size_t p, int newValue) const
+{
+	size_t ptr = p * (m_width * m_height) + h * m_width + w;
+	assert(ptr < m_data_size);
+	m_data[ptr] = newValue;
+}
+
+void SamplingMask::removeKSpaceCenter()
+{
+	size_t centerX = (m_width + 1) / 2 - 1;
+	size_t centerY = (m_height + 1) / 2 - 1;
+	size_t centerPhase = 0;
+	if (m_phases > 0) {
+		centerPhase = (m_phases + 1) / 2 - 1;
+	}
+	set(centerX, centerY, centerPhase, 0);
+}

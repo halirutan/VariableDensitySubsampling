@@ -17,8 +17,9 @@ SamplingMask poissonSubsampling(long lLines,
                                 short int v_type,
                                 short int s_type,
                                 bool ellipticalMask,
-                                float p,
-                                float n,
+                                float power,
+                                float root,
+								bool removeKSpaceCenter,
                                 short int body_part,
                                 float iso_fac,
                                 unsigned int random_seed,
@@ -99,12 +100,12 @@ SamplingMask poissonSubsampling(long lLines,
         }
     }
 
-    VariableDensity *vd = new VariableDensity(nX, nY_helper, vd_type, fully_sampled, ellip_mask, p, n, iso_fac, M);
+    VariableDensity *vd = new VariableDensity(nX, nY_helper, vd_type, fully_sampled, ellip_mask, power, root, iso_fac, M);
 
     if (vd_type < 6) {
         beginStdoutLoggingSection();
         min_dist =
-            Approx::findMinDistInLUT(nX, nY, M, fully_sampled, pF_value, vd_type, ellip_mask, p, iso_fac, smpl_type);
+            Approx::findMinDistInLUT(nX, nY, M, fully_sampled, pF_value, vd_type, ellip_mask, power, iso_fac, smpl_type);
         endStdoutLoggingSection();
     }
 
@@ -114,7 +115,7 @@ SamplingMask poissonSubsampling(long lLines,
     float *range;
     if (smpl_type != 0) {// 3D
         beginStdoutLoggingSection();
-        range = Approx::findRangeInLUT(nX, nY, M, fully_sampled, pF_value, vd_type, ellip_mask, p, iso_fac);
+        range = Approx::findRangeInLUT(nX, nY, M, fully_sampled, pF_value, vd_type, ellip_mask, power, iso_fac);
         endStdoutLoggingSection();
     }
     else {
@@ -170,6 +171,10 @@ SamplingMask poissonSubsampling(long lLines,
     delete poiSamp;
     delete approx;
     delete vd;
+
+	if(removeKSpaceCenter) {
+		samplingMask.removeKSpaceCenter();
+	}
 
     return samplingMask;
 }

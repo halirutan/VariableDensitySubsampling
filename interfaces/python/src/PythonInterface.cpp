@@ -22,8 +22,9 @@ PYBIND11_MODULE(subsample_python_library, m)
 			  short int v_type,
 			  short int s_type,
 			  bool ellipticalMask,
-			  float p,
-			  float n,
+			  float power,
+			  float root,
+			  bool remove_kspace_center,
 			  unsigned int random_seed,
 			  bool logging
 		  )
@@ -39,8 +40,9 @@ PYBIND11_MODULE(subsample_python_library, m)
 				  v_type,
 				  s_type,
 				  ellipticalMask,
-				  p,
-				  n,
+				  power,
+				  root,
+				  remove_kspace_center,
 				  0,
 				  1.0,
 				  random_seed,
@@ -59,6 +61,7 @@ PYBIND11_MODULE(subsample_python_library, m)
 		  py::arg("elliptical_mask"),
 		  py::arg("power"),
 		  py::arg("root"),
+		  py::arg("remove_kspace_center"),
 		  py::arg("random_seed"),
 		  py::arg("logging")
 	);

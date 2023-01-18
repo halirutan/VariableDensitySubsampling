@@ -34,7 +34,9 @@ public:
 	[[nodiscard]] size_t phases() const;
 	[[nodiscard]] int get(size_t w, size_t h, size_t p) const;
 	void setLine(size_t height, size_t phase, const int *dataPointer);
+	void removeKSpaceCenter();
 private:
+	void set(size_t w, size_t h, size_t p, int newValue) const;
 	size_t m_width, m_height, m_phases, m_data_size;
 	std::shared_ptr<int[]> m_data;
 
