@@ -5,6 +5,8 @@
 <!-- TOC -->
 * [Subsample: A Python Interface for Poisson Subsampling](#subsample--a-python-interface-for-poisson-subsampling)
   * [Usage](#usage)
+    * [Notes](#notes)
+  * [Helper Programs](#helper-programs)
   * [Building and Installation](#building-and-installation)
     * [General Information](#general-information)
     * [Setting up a Virtual Environment](#setting-up-a-virtual-environment)
