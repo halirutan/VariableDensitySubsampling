@@ -40,6 +40,7 @@ class PoissonSampling:
     elliptical_mask: bool = True
     power: float = 2.0
     root: float = 2.0
+    remove_kspace_center: bool = True
     random_seed: int = 0
     logging: bool = False
 ```
